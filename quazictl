@@ -62,13 +62,18 @@ run() {
 		fi
 	fi
 }
+push(){
+    docker image dexterquazi/openprovider:$(git rev-parse HEAD|cut -b 1-9)
 
+}
 build() {
 	if [ "$1" == "--docker" ]; then
 		show grey "INFO: checking dockerfile"
 		if ls Dockerfile >/dev/null 2>&1; then
 			show yellow "------Building Image-------"
-			docker build -t dexterquazi/openprovider .
+            TAG=$(git rev-parse HEAD|cut -b 1-9)
+            show green "building image with name dexterquazi/openprovider:$TAG"
+			docker build -t dexterquazi/openprovider:$TAG .
 		else
 			show red "ERROR: No Dockerfile present in $(pwd)"
 			return 1

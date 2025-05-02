@@ -29,7 +29,7 @@ show() { #function to show text in color
 	printf "%b\n" "$color$2\033[0m"
 }
 test_docker_compose(){
-
+    git pull
     cat docker-compose.yaml|sed "s/IMAGETAG/$(git rev-parse HEAD | cut -b 1-7)/g" >dc.yaml
     rm docker-compose.yaml
     mv dc.yaml docker-compose.yaml

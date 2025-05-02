@@ -14,7 +14,7 @@ services:
       - openprovider-test
 
   appd:
-    image: dexterquazi/openprovider:4bd2e17fa
+    image: dexterquazi/openprovider:IMAGETAG
     container_name: appd
     ports:
       - "8080:8080"

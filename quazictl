@@ -1,0 +1,96 @@
+show() { #function to show text in color
+	if [ "$#" -ne 2 ]; then
+		echo "Error: show function requires exactly 2 arguments" >&2
+		exit 1
+	fi
+	local color="\033[0m" # Reset color
+	case "$1" in
+	"red")
+		color="\033[1;31m" # Red
+		;;
+	"blue")
+		color="\033[1;34m" # Blue
+		;;
+	"green")
+		color="\033[1;32m" # Green
+		;;
+	"grey")
+		color="\033[1;90m" # grey
+		;;
+	"yellow")
+		color="\033[1;33m" # grey
+		;;
+	*)
+		color="\033[0m" # Reset color
+		echo "Error: Invalid color '$1'" >&2
+		usage
+		;;
+	esac
+	printf "%b\n" "$color$2\033[0m"
+}
+run() {
+	if [ "$1" == "--docker" ]; then
+		show yellow "running on docker"
+		if docker images | grep dexterquazi/openprovider >/dev/null 2>&1; then
+			show green "INFO: image found running it"
+			docker rm -f daemon-openprovider
+			if docker run -it --name daemon-openprovider -p 8080:8080 dexterquazi/openprovider; then
+				show green "running app in docker"
+			else
+				show red "ERROR: running app"
+			fi
+		else
+			show yellow "WARNING: No image found building one"
+			build --docker
+			run --docker
+		fi
+	else
+		netstat -an | grep 8080
+		show yellow "INFO: Checking if postgress running"
+		if curl localhost:5432 2>&1 | grep "Empty reply from server"; then
+			show green "Postgress is running booting up app"
+			show green "INFO: running app"
+			if ./app; then
+				show green "INFO: ran successfully"
+				exit 0
+			else
+				show red "ERROR: err running app"
+				exit 1
+			fi
+		else
+			show red "postgress not running on 5432"
+		fi
+	fi
+}
+
+build() {
+	if [ "$1" == "--docker" ]; then
+		show grey "INFO: checking dockerfile"
+		if ls Dockerfile >/dev/null 2>&1; then
+			show yellow "------Building Image-------"
+			docker build -t dexterquazi/openprovider .
+		else
+			show red "ERROR: No Dockerfile present in $(pwd)"
+			return 1
+		fi
+	else
+		echo "------Building locally-------"
+		show grey "INFO: checking for dependency"
+		if go mod tidy; then
+			show green "INFO: building executable"
+		else
+			show red "ERROR: handling dependency"
+		fi
+		if go build -o app; then
+			show grey "INFO: setting up permisson"
+			chmod 777 app
+		else
+			show red "ERROR: setting permisson"
+		fi
+	fi
+}
+
+main() {
+	$@
+}
+main "$@"

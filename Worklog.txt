@@ -9,3 +9,19 @@
 9. make it condition base helm chart
 10. segridate all deployment files to new repo name <this reponame>-deployment
 11. create branch wise env in deployment repo, dev-usw2-eks, qal-usw2-eks, e2e-usw2-eks, prd-usw2-eks.
+
+
+# In-local testing
+1. 
+$ deploy postgress container
+ docker run --name my-postgres \
+  -e POSTGRES_USER=test \
+  -e POSTGRES_PASSWORD=test \
+  -e POSTGRES_DB=bdb \
+  -p 5432:5432 \
+  -d postgres
+2. try build this app
+$ go mod tidy #install dependency
+$ go build -o app #build binary exec app
+$ chmod 777 app #permission to run
+$ ./app run app 

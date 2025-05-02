@@ -1,0 +1,4 @@
+1. forked the repo and deteched the fork so others cant copy my work. DONE
+2. protect master branch for direct push changes should be go through PR. DONE
+3. Create simple Dockerfile TODO
+4. update dockerfile to  multi stage build. TODO

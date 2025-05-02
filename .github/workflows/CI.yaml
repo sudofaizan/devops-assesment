@@ -18,3 +18,5 @@ jobs:
       run: bash quazictl build --docker
     - name: Docker Login
       run: echo "${{ secrets.DOCKER_PASSWORD }}"|docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+    - name: Image push
+      run: bash quazictl push

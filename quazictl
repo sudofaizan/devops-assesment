@@ -30,7 +30,7 @@ show() { #function to show text in color
 }
 test_docker_compose(){
     git pull
-    cat docker-compose.yaml|sed "s/IMAGETAG/$(git rev-parse HEAD | cut -b 1-7)/g" >dc.yaml
+    cat docker-compose.yaml|sed "s/IMAGETAG/$(git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/heads/ | head -n 1 | xargs -I {} git log -1 --format="%H" {}|cut -b 1-7)/g" >dc.yaml
     rm docker-compose.yaml
     mv dc.yaml docker-compose.yaml
     docker-compose up -d
@@ -57,7 +57,7 @@ test_docker() {
 		-d postgres
     sleep 5        
 	show green "INFO: Running appd"
-	docker run -d --name appd --network openprovider-test --rm -p 8080:8080 dexterquazi/openprovider:$(git rev-parse HEAD | cut -b 1-7)
+	docker run -d --name appd --network openprovider-test --rm -p 8080:8080 dexterquazi/openprovider:$(git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/heads/ | head -n 1 | xargs -I {} git log -1 --format="%H" {}|cut -b 1-7)
 	sleep 3
 	show green "INFO: checking health"
 	if curl -sX GET localhost:8080/health | grep healthy; then
@@ -105,8 +105,8 @@ run() {
 	fi
 }
 push() {
-	if docker images dexterquazi/openprovider:$(git rev-parse HEAD | cut -b 1-7); then
-		docker push dexterquazi/openprovider:$(git rev-parse HEAD | cut -b 1-7)
+	if docker images dexterquazi/openprovider:$(git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/heads/ | head -n 1 | xargs -I {} git log -1 --format="%H" {}|cut -b 1-7); then
+		docker push dexterquazi/openprovider:$(git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/heads/ | head -n 1 | xargs -I {} git log -1 --format="%H" {}|cut -b 1-7)
 	else
 		show red "Build image first"
 	fi
@@ -117,7 +117,7 @@ build() {
 		show grey "INFO: checking dockerfile"
 		if ls Dockerfile >/dev/null 2>&1; then
 			show yellow "------Building Image-------"
-			TAG=$(git rev-parse HEAD | cut -b 1-7)
+			TAG=$(git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/heads/ | head -n 1 | xargs -I {} git log -1 --format="%H" {}|cut -b 1-7)
 			show green "building image with name dexterquazi/openprovider:$TAG"
 			docker build -t dexterquazi/openprovider:$TAG .
 		else

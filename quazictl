@@ -38,8 +38,10 @@ test_docker_compose(){
     if curl -f http://localhost:8080/health |grep healthy
     then
     show green "App is healthy"
+    exit 0
     else
     show red "fail to start app"
+    exit 1
     fi
 }
 test_docker() {

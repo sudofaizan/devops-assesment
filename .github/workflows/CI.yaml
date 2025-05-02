@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: getsha  
+        run: echo "SHORT_SHA=${GITHUB_SHA::7}" >gitsha
       - name: Build the Docker image
         run: bash quazictl build --docker
       - name: Docker Login
@@ -29,6 +31,8 @@ jobs:
     needs: Run
     steps:
       - uses: actions/checkout@v4
+      - name: getsha  
+        run: echo "SHORT_SHA=${GITHUB_SHA::7}" >gitsha
       - name: get-compose
         run: curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose
       - name: Test-compose

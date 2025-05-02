@@ -1,14 +1,16 @@
 1. forked the repo and deteched the fork so others cant copy my work. DONE
 2. protect master branch for direct push changes should be go through PR. DONE
 3. Create simple Dockerfile TODO
-4. update dockerfile to  multi stage build. TODO
-5. Local: run app and test health
-6. create a shell script to automate task
-7. create a k8s yaml deployment,service,ingress,cm,secrets.
-8. create a helm chart with this files and implement ref in values.yaml
-9. make it condition base helm chart
-10. segridate all deployment files to new repo name <this reponame>-deployment
-11. create branch wise env in deployment repo, dev-usw2-eks, qal-usw2-eks, e2e-usw2-eks, prd-usw2-eks.
+4. update dockerfile to  multi stage build. DONE
+5. Local: run app and test health DONE
+6. create a shell script to automate task DONE
+7. Run via CI gh actions
+8. run via compose in actions
+9. create a k8s yaml deployment,service,ingress,cm,secrets. TODO
+10. create a helm chart with this files and implement ref in values.yaml TODO
+11. make it condition base helm chart TODO
+12. segrigate all deployment files to new repo name <this reponame>-deployment TODO
+13. create branch wise env in deployment repo, dev-usw2-eks, qal-usw2-eks, e2e-usw2-eks, prd-usw2-eks. TODO
 
 
 # In-local testing
@@ -24,4 +26,4 @@ $ deploy postgress container
 $ go mod tidy #install dependency
 $ go build -o app #build binary exec app
 $ chmod 777 app #permission to run
-$ ./app run app 
+$ ./app run app

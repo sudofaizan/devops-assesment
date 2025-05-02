@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: getsha  
-        run: echo "SHORT_SHA=${GITHUB_SHA::7}" >gitsha
+        run: echo "${GITHUB_SHA::7}" >gitsha
       - name: Build the Docker image
         run: bash quazictl build --docker
       - name: Docker Login

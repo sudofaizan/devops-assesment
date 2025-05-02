@@ -29,8 +29,9 @@ show() { #function to show text in color
 	printf "%b\n" "$color$2\033[0m"
 }
 test_docker_compose(){
-    
-    cat docker-compose.yaml|sed "s/IMAGETAG/$(git rev-parse HEAD | cut -b 1-9)/g" >dc.yaml
+
+    cat docker-compose.yaml|sed "s/IMAGETAG/$(git rev-parse HEAD | cut -b 1-7)/g" >dc.yaml
+    rm docker-compose.yaml
     mv dc.yaml docker-compose.yaml
     docker-compose up -d
     sleep 3
@@ -56,7 +57,7 @@ test_docker() {
 		-d postgres
     sleep 5        
 	show green "INFO: Running appd"
-	docker run -d --name appd --network openprovider-test --rm -p 8080:8080 dexterquazi/openprovider:$(git rev-parse HEAD | cut -b 1-9)
+	docker run -d --name appd --network openprovider-test --rm -p 8080:8080 dexterquazi/openprovider:$(git rev-parse HEAD | cut -b 1-7)
 	sleep 3
 	show green "INFO: checking health"
 	if curl -sX GET localhost:8080/health | grep healthy; then
@@ -104,8 +105,8 @@ run() {
 	fi
 }
 push() {
-	if docker images dexterquazi/openprovider:$(git rev-parse HEAD | cut -b 1-9); then
-		docker push dexterquazi/openprovider:$(git rev-parse HEAD | cut -b 1-9)
+	if docker images dexterquazi/openprovider:$(git rev-parse HEAD | cut -b 1-7); then
+		docker push dexterquazi/openprovider:$(git rev-parse HEAD | cut -b 1-7)
 	else
 		show red "Build image first"
 	fi
@@ -116,7 +117,7 @@ build() {
 		show grey "INFO: checking dockerfile"
 		if ls Dockerfile >/dev/null 2>&1; then
 			show yellow "------Building Image-------"
-			TAG=$(git rev-parse HEAD | cut -b 1-9)
+			TAG=$(git rev-parse HEAD | cut -b 1-7)
 			show green "building image with name dexterquazi/openprovider:$TAG"
 			docker build -t dexterquazi/openprovider:$TAG .
 		else

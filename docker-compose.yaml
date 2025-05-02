@@ -22,7 +22,7 @@ services:
       - openprovider-test
     depends_on:
       - postgres
-    restart: "no"
+    restart: "always"
 
 networks:
   openprovider-test:

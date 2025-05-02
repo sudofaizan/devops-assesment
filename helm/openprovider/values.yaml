@@ -8,4 +8,4 @@ postgres:
 image:
   tag: e36cf1f
 appd: 
-  replicas: 1
+  replicas: 5

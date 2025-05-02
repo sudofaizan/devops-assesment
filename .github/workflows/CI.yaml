@@ -24,6 +24,8 @@ jobs:
     needs: build-push
     steps:
       - uses: actions/checkout@v4
+      - name: getsha  
+        run: echo "${GITHUB_SHA::7}" >gitsha
       - name: Test
         run: bash quazictl test_docker 
   Run-compose:

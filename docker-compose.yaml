@@ -1,0 +1,29 @@
+# version: '3'
+
+services:
+  postgres:
+    image: postgres
+    container_name: my-postgres
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: bdb
+    ports:
+      - "5432:5432"
+    networks:
+      - openprovider-test
+
+  appd:
+    image: dexterquazi/openprovider:IMAGETAG
+    container_name: appd
+    ports:
+      - "8080:8080"
+    networks:
+      - openprovider-test
+    depends_on:
+      - postgres
+    restart: "always"
+
+networks:
+  openprovider-test:
+    driver: bridge

@@ -28,6 +28,54 @@ show() { #function to show text in color
 	esac
 	printf "%b\n" "$color$2\033[0m"
 }
+test_docker_compose(){
+    cat gitsha
+    cat docker-compose.yaml|sed "s/IMAGETAG/$(cat gitsha)/g" >dc.yaml
+    rm docker-compose.yaml    
+    mv dc.yaml docker-compose.yaml
+    docker-compose up -d    
+    sleep 5
+    if curl -f http://localhost:8080/health |grep healthy
+    then
+    show green "App is healthy"
+    exit 0
+    else
+    show red "fail to start app"
+    exit 1
+    fi
+}
+deploy_helm(){
+     helm template helm/openprovider --set image.tag=$(cat gitsha) >menifest.yaml
+     kubectl apply -f menifest.yaml
+}
+test_docker() {
+	show green "INFO: Removing existing containers"
+	docker rm -f $(docker ps -aq) || true
+	show green "INFO: Creating network"
+	docker network create openprovider-test || true
+	show green "INFO: running postgresDaemon"
+	docker run -d --name my-postgres \
+		-e POSTGRES_USER=test \
+		-e POSTGRES_PASSWORD=test \
+		-e POSTGRES_DB=bdb \
+		-p 5432:5432 \
+		--network openprovider-test \
+		-d postgres
+    sleep 5        
+	show green "INFO: Running appd"
+	docker run -d --name appd --network openprovider-test --rm -p 8080:8080 dexterquazi/openprovider:$(cat gitsha)
+	sleep 3
+	show green "INFO: checking health"
+	if curl -sX GET localhost:8080/health | grep healthy; then
+		show green "INFO: appd Is healthy destroying Infra"
+        docker rm -f $(docker ps -aq)
+        exit 0
+	else
+		show red "ERROR: Fail to run application daemon"
+        exit 1
+	fi
+
+}
 run() {
 	if [ "$1" == "--docker" ]; then
 		show yellow "running on docker"
@@ -62,13 +110,22 @@ run() {
 		fi
 	fi
 }
+push() {
+	if docker images dexterquazi/openprovider:$(cat gitsha); then
+		docker push dexterquazi/openprovider:$(cat gitsha)
+	else
+		show red "Build image first"
+	fi
 
+}
 build() {
 	if [ "$1" == "--docker" ]; then
 		show grey "INFO: checking dockerfile"
 		if ls Dockerfile >/dev/null 2>&1; then
 			show yellow "------Building Image-------"
-			docker build -t dexterquazi/openprovider .
+			TAG=$(cat gitsha)
+			show green "building image with name dexterquazi/openprovider:$TAG"
+			docker build -t dexterquazi/openprovider:$TAG .
 		else
 			show red "ERROR: No Dockerfile present in $(pwd)"
 			return 1
@@ -88,6 +145,18 @@ build() {
 			show red "ERROR: setting permisson"
 		fi
 	fi
+}
+help(){
+    echo "Usage: 
+-------functions in quazictl-------
+ quazictl build  #build in local
+ quazictl build --docker #build image in docker
+ quazictl test_docker #run app in docker
+ quazictl test_docker_compose #run app in compose
+ quazictl deploy_helm #get template and deploy to k8s
+ quazictl run #run app
+ quazictl push #push image
+ "
 }
 
 main() {

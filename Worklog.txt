@@ -2,3 +2,10 @@
 2. protect master branch for direct push changes should be go through PR. DONE
 3. Create simple Dockerfile TODO
 4. update dockerfile to  multi stage build. TODO
+5. Local: run app and test health
+6. create a shell script to automate task
+7. create a k8s yaml deployment,service,ingress,cm,secrets.
+8. create a helm chart with this files and implement ref in values.yaml
+9. make it condition base helm chart
+10. segridate all deployment files to new repo name <this reponame>-deployment
+11. create branch wise env in deployment repo, dev-usw2-eks, qal-usw2-eks, e2e-usw2-eks, prd-usw2-eks.

@@ -44,6 +44,10 @@ test_docker_compose(){
     exit 1
     fi
 }
+deploy_helm(){
+     helm template helm/openprovider --set image.tag=$(cat gitsha) >menifest.yaml
+     kubectl apply -f menifest.yaml
+}
 test_docker() {
 	show green "INFO: Removing existing containers"
 	docker rm -f $(docker ps -aq) || true
@@ -141,6 +145,18 @@ build() {
 			show red "ERROR: setting permisson"
 		fi
 	fi
+}
+help(){
+    echo "Usage: 
+-------functions in quazictl-------
+ quazictl build  #build in local
+ quazictl build --docker #build image in docker
+ quazictl test_docker #run app in docker
+ quazictl test_docker_compose #run app in compose
+ quazictl deploy_helm #get template and deploy to k8s
+ quazictl run #run app
+ quazictl push #push image
+ "
 }
 
 main() {

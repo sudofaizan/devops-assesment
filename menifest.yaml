@@ -1,0 +1,79 @@
+---
+# Source: openprovider/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-postgres
+spec:
+  selector:
+    app: postgres
+  ports:
+  - port: 5432
+    targetPort: 5432
+---
+# Source: openprovider/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: appd
+spec:
+  selector:
+    app: appd
+  ports:
+  - port: 8080
+    targetPort: 8080
+---
+# Source: openprovider/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_USER
+          value: test
+        - name: POSTGRES_PASSWORD
+          value: test
+        - name: POSTGRES_DB
+          value: bdb
+---
+# Source: openprovider/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: appd
+  template:
+    metadata:
+      labels:
+        app: appd
+    spec:
+      containers:
+      - name: appd
+        image: "dexterquazi/openprovider:"
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5

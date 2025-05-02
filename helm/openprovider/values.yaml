@@ -1,0 +1,11 @@
+service:
+  port: 8080
+postgres:
+  port: 5432
+  database: bdb
+  password: test
+  userName: test
+image:
+  tag: e36cf1f
+appd: 
+  replicas: 1

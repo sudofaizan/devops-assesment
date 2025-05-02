@@ -28,7 +28,6 @@ jobs:
         run: bash quazictl test_docker 
   Run-compose:
     runs-on: ubuntu-latest
-    needs: Run
     steps:
       - uses: actions/checkout@v4
       - name: getsha  

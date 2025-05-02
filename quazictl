@@ -62,13 +62,12 @@ run() {
 		fi
 	fi
 }
-push(){
-    if docker images dexterquazi/openprovider:$(git rev-parse HEAD|cut -b 1-9);then
-    docker push dexterquazi/openprovider:$(git rev-parse HEAD|cut -b 1-9)
-    else
-    show red  "Build image first"
-    fi
-
+push() {
+	if docker images dexterquazi/openprovider:$(git rev-parse HEAD | cut -b 1-9); then
+		docker push dexterquazi/openprovider:$(git rev-parse HEAD | cut -b 1-9)
+	else
+		show red "Build image first"
+	fi
 
 }
 build() {
@@ -76,8 +75,8 @@ build() {
 		show grey "INFO: checking dockerfile"
 		if ls Dockerfile >/dev/null 2>&1; then
 			show yellow "------Building Image-------"
-            TAG=$(git rev-parse HEAD|cut -b 1-9)
-            show green "building image with name dexterquazi/openprovider:$TAG"
+			TAG=$(git rev-parse HEAD | cut -b 1-9)
+			show green "building image with name dexterquazi/openprovider:$TAG"
 			docker build -t dexterquazi/openprovider:$TAG .
 		else
 			show red "ERROR: No Dockerfile present in $(pwd)"

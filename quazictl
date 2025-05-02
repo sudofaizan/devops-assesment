@@ -28,6 +28,19 @@ show() { #function to show text in color
 	esac
 	printf "%b\n" "$color$2\033[0m"
 }
+test_docker_compose(){
+    
+    cat docker-compose.yaml|sed "s/IMAGETAG/$(git rev-parse HEAD | cut -b 1-9)/g" >dc.yaml
+    mv dc.yaml docker-compose.yaml
+    docker-compose up -d
+    sleep 3
+    if curl -f http://localhost:8080/health |grep healthy
+    then
+    show green "App is healthy"
+    else
+    show red "fail to start app"
+    fi
+}
 test_docker() {
 	show green "INFO: Removing existing containers"
 	docker rm -f $(docker ps -aq) || true
@@ -49,8 +62,10 @@ test_docker() {
 	if curl -sX GET localhost:8080/health | grep healthy; then
 		show green "INFO: appd Is healthy destroying Infra"
         docker rm -f $(docker ps -aq)
+        exit 0
 	else
 		show red "ERROR: Fail to run application daemon"
+        exit 1
 	fi
 
 }

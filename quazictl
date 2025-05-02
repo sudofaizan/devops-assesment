@@ -29,10 +29,14 @@ show() { #function to show text in color
 	printf "%b\n" "$color$2\033[0m"
 }
 test_docker_compose(){
+    cat gitsha
     cat docker-compose.yaml|sed "s/IMAGETAG/$(cat gitsha)/g" >dc.yaml
     rm docker-compose.yaml
+    
     mv dc.yaml docker-compose.yaml
+    cat docker-compose.yaml
     docker-compose up -d
+    
     sleep 5
     if curl -f http://localhost:8080/health |grep healthy
     then
